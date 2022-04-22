@@ -1,14 +1,14 @@
 /* eslint-disable */
-import Long from 'long'
+import * as Long from 'long'
 import * as _m0 from 'protobufjs/minimal'
 
 export const protobufPackage = 'cosmonaut.documentservice.documentservice'
 
 export interface Annex {
 	creator: string
-	id: Long
+	id: number
 	annexHash: string
-	contractId: Long
+	contractId: number
 	state: string
 	seller: string
 	buyer: string
@@ -16,7 +16,7 @@ export interface Annex {
 }
 
 function createBaseAnnex(): Annex {
-	return { creator: '', id: Long.UZERO, annexHash: '', contractId: Long.UZERO, state: '', seller: '', buyer: '', createDate: '' }
+	return { creator: '', id: 0, annexHash: '', contractId: 0, state: '', seller: '', buyer: '', createDate: '' }
 }
 
 export const Annex = {
@@ -24,13 +24,13 @@ export const Annex = {
 		if (message.creator !== '') {
 			writer.uint32(10).string(message.creator)
 		}
-		if (!message.id.isZero()) {
+		if (message.id !== 0) {
 			writer.uint32(16).uint64(message.id)
 		}
 		if (message.annexHash !== '') {
 			writer.uint32(26).string(message.annexHash)
 		}
-		if (!message.contractId.isZero()) {
+		if (message.contractId !== 0) {
 			writer.uint32(32).uint64(message.contractId)
 		}
 		if (message.state !== '') {
@@ -59,13 +59,13 @@ export const Annex = {
 					message.creator = reader.string()
 					break
 				case 2:
-					message.id = reader.uint64() as Long
+					message.id = longToNumber(reader.uint64() as Long)
 					break
 				case 3:
 					message.annexHash = reader.string()
 					break
 				case 4:
-					message.contractId = reader.uint64() as Long
+					message.contractId = longToNumber(reader.uint64() as Long)
 					break
 				case 5:
 					message.state = reader.string()
@@ -90,9 +90,9 @@ export const Annex = {
 	fromJSON(object: any): Annex {
 		return {
 			creator: isSet(object.creator) ? String(object.creator) : '',
-			id: isSet(object.id) ? Long.fromString(object.id) : Long.UZERO,
+			id: isSet(object.id) ? Number(object.id) : 0,
 			annexHash: isSet(object.annexHash) ? String(object.annexHash) : '',
-			contractId: isSet(object.contractId) ? Long.fromString(object.contractId) : Long.UZERO,
+			contractId: isSet(object.contractId) ? Number(object.contractId) : 0,
 			state: isSet(object.state) ? String(object.state) : '',
 			seller: isSet(object.seller) ? String(object.seller) : '',
 			buyer: isSet(object.buyer) ? String(object.buyer) : '',
@@ -103,9 +103,9 @@ export const Annex = {
 	toJSON(message: Annex): unknown {
 		const obj: any = {}
 		message.creator !== undefined && (obj.creator = message.creator)
-		message.id !== undefined && (obj.id = (message.id || Long.UZERO).toString())
+		message.id !== undefined && (obj.id = Math.round(message.id))
 		message.annexHash !== undefined && (obj.annexHash = message.annexHash)
-		message.contractId !== undefined && (obj.contractId = (message.contractId || Long.UZERO).toString())
+		message.contractId !== undefined && (obj.contractId = Math.round(message.contractId))
 		message.state !== undefined && (obj.state = message.state)
 		message.seller !== undefined && (obj.seller = message.seller)
 		message.buyer !== undefined && (obj.buyer = message.buyer)
@@ -116,9 +116,9 @@ export const Annex = {
 	fromPartial<I extends Exact<DeepPartial<Annex>, I>>(object: I): Annex {
 		const message = createBaseAnnex()
 		message.creator = object.creator ?? ''
-		message.id = object.id !== undefined && object.id !== null ? Long.fromValue(object.id) : Long.UZERO
+		message.id = object.id ?? 0
 		message.annexHash = object.annexHash ?? ''
-		message.contractId = object.contractId !== undefined && object.contractId !== null ? Long.fromValue(object.contractId) : Long.UZERO
+		message.contractId = object.contractId ?? 0
 		message.state = object.state ?? ''
 		message.seller = object.seller ?? ''
 		message.buyer = object.buyer ?? ''
@@ -127,12 +127,21 @@ export const Annex = {
 	},
 }
 
+declare var self: any | undefined
+declare var window: any | undefined
+declare var global: any | undefined
+var globalThis: any = (() => {
+	if (typeof globalThis !== 'undefined') return globalThis
+	if (typeof self !== 'undefined') return self
+	if (typeof window !== 'undefined') return window
+	if (typeof global !== 'undefined') return global
+	throw 'Unable to locate global object'
+})()
+
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined
 
 export type DeepPartial<T> = T extends Builtin
 	? T
-	: T extends Long
-	? string | number | Long
 	: T extends Array<infer U>
 	? Array<DeepPartial<U>>
 	: T extends ReadonlyArray<infer U>
@@ -146,6 +155,15 @@ export type Exact<P, I extends P> = P extends Builtin
 	? P
 	: P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<Exclude<keyof I, KeysOfUnion<P>>, never>
 
+function longToNumber(long: Long): number {
+	if (long.gt(Number.MAX_SAFE_INTEGER)) {
+		throw new globalThis.Error('Value is larger than Number.MAX_SAFE_INTEGER')
+	}
+	return long.toNumber()
+}
+
+// If you get a compile-error about 'Constructor<Long> and ... have no overlap',
+// add '--ts_proto_opt=esModuleInterop=true' as a flag when calling 'protoc'.
 if (_m0.util.Long !== Long) {
 	_m0.util.Long = Long as any
 	_m0.configure()

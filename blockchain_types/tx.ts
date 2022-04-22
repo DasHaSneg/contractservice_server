@@ -1,5 +1,5 @@
 /* eslint-disable */
-import Long from 'long'
+import * as Long from 'long'
 import * as _m0 from 'protobufjs/minimal'
 
 export const protobufPackage = 'cosmonaut.documentservice.documentservice'
@@ -11,39 +11,39 @@ export interface MsgCreateContract {
 }
 
 export interface MsgCreateContractResponse {
-	id: Long
+	id: number
 	createDate: string
 }
 
 export interface MsgCreateAnnex {
 	creator: string
 	annexHash: string
-	contractId: Long
+	contractId: number
 	buyer: string
 }
 
 export interface MsgCreateAnnexResponse {
-	id: Long
+	id: number
 	createDate: string
 }
 
 export interface MsgSignAnnex {
 	creator: string
-	annexId: Long
+	annexId: number
 }
 
 export interface MsgSignAnnexResponse {}
 
 export interface MsgSignContract {
 	creator: string
-	contractId: Long
+	contractId: number
 }
 
 export interface MsgSignContractResponse {}
 
 export interface MsgCompleteContract {
 	creator: string
-	contractId: Long
+	contractId: number
 }
 
 export interface MsgCompleteContractResponse {}
@@ -116,12 +116,12 @@ export const MsgCreateContract = {
 }
 
 function createBaseMsgCreateContractResponse(): MsgCreateContractResponse {
-	return { id: Long.UZERO, createDate: '' }
+	return { id: 0, createDate: '' }
 }
 
 export const MsgCreateContractResponse = {
 	encode(message: MsgCreateContractResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-		if (!message.id.isZero()) {
+		if (message.id !== 0) {
 			writer.uint32(8).uint64(message.id)
 		}
 		if (message.createDate !== '') {
@@ -138,7 +138,7 @@ export const MsgCreateContractResponse = {
 			const tag = reader.uint32()
 			switch (tag >>> 3) {
 				case 1:
-					message.id = reader.uint64() as Long
+					message.id = longToNumber(reader.uint64() as Long)
 					break
 				case 2:
 					message.createDate = reader.string()
@@ -153,28 +153,28 @@ export const MsgCreateContractResponse = {
 
 	fromJSON(object: any): MsgCreateContractResponse {
 		return {
-			id: isSet(object.id) ? Long.fromString(object.id) : Long.UZERO,
+			id: isSet(object.id) ? Number(object.id) : 0,
 			createDate: isSet(object.createDate) ? String(object.createDate) : '',
 		}
 	},
 
 	toJSON(message: MsgCreateContractResponse): unknown {
 		const obj: any = {}
-		message.id !== undefined && (obj.id = (message.id || Long.UZERO).toString())
+		message.id !== undefined && (obj.id = Math.round(message.id))
 		message.createDate !== undefined && (obj.createDate = message.createDate)
 		return obj
 	},
 
 	fromPartial<I extends Exact<DeepPartial<MsgCreateContractResponse>, I>>(object: I): MsgCreateContractResponse {
 		const message = createBaseMsgCreateContractResponse()
-		message.id = object.id !== undefined && object.id !== null ? Long.fromValue(object.id) : Long.UZERO
+		message.id = object.id ?? 0
 		message.createDate = object.createDate ?? ''
 		return message
 	},
 }
 
 function createBaseMsgCreateAnnex(): MsgCreateAnnex {
-	return { creator: '', annexHash: '', contractId: Long.UZERO, buyer: '' }
+	return { creator: '', annexHash: '', contractId: 0, buyer: '' }
 }
 
 export const MsgCreateAnnex = {
@@ -185,7 +185,7 @@ export const MsgCreateAnnex = {
 		if (message.annexHash !== '') {
 			writer.uint32(18).string(message.annexHash)
 		}
-		if (!message.contractId.isZero()) {
+		if (message.contractId !== 0) {
 			writer.uint32(24).uint64(message.contractId)
 		}
 		if (message.buyer !== '') {
@@ -208,7 +208,7 @@ export const MsgCreateAnnex = {
 					message.annexHash = reader.string()
 					break
 				case 3:
-					message.contractId = reader.uint64() as Long
+					message.contractId = longToNumber(reader.uint64() as Long)
 					break
 				case 4:
 					message.buyer = reader.string()
@@ -225,7 +225,7 @@ export const MsgCreateAnnex = {
 		return {
 			creator: isSet(object.creator) ? String(object.creator) : '',
 			annexHash: isSet(object.annexHash) ? String(object.annexHash) : '',
-			contractId: isSet(object.contractId) ? Long.fromString(object.contractId) : Long.UZERO,
+			contractId: isSet(object.contractId) ? Number(object.contractId) : 0,
 			buyer: isSet(object.buyer) ? String(object.buyer) : '',
 		}
 	},
@@ -234,7 +234,7 @@ export const MsgCreateAnnex = {
 		const obj: any = {}
 		message.creator !== undefined && (obj.creator = message.creator)
 		message.annexHash !== undefined && (obj.annexHash = message.annexHash)
-		message.contractId !== undefined && (obj.contractId = (message.contractId || Long.UZERO).toString())
+		message.contractId !== undefined && (obj.contractId = Math.round(message.contractId))
 		message.buyer !== undefined && (obj.buyer = message.buyer)
 		return obj
 	},
@@ -243,19 +243,19 @@ export const MsgCreateAnnex = {
 		const message = createBaseMsgCreateAnnex()
 		message.creator = object.creator ?? ''
 		message.annexHash = object.annexHash ?? ''
-		message.contractId = object.contractId !== undefined && object.contractId !== null ? Long.fromValue(object.contractId) : Long.UZERO
+		message.contractId = object.contractId ?? 0
 		message.buyer = object.buyer ?? ''
 		return message
 	},
 }
 
 function createBaseMsgCreateAnnexResponse(): MsgCreateAnnexResponse {
-	return { id: Long.UZERO, createDate: '' }
+	return { id: 0, createDate: '' }
 }
 
 export const MsgCreateAnnexResponse = {
 	encode(message: MsgCreateAnnexResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-		if (!message.id.isZero()) {
+		if (message.id !== 0) {
 			writer.uint32(8).uint64(message.id)
 		}
 		if (message.createDate !== '') {
@@ -272,7 +272,7 @@ export const MsgCreateAnnexResponse = {
 			const tag = reader.uint32()
 			switch (tag >>> 3) {
 				case 1:
-					message.id = reader.uint64() as Long
+					message.id = longToNumber(reader.uint64() as Long)
 					break
 				case 2:
 					message.createDate = reader.string()
@@ -287,28 +287,28 @@ export const MsgCreateAnnexResponse = {
 
 	fromJSON(object: any): MsgCreateAnnexResponse {
 		return {
-			id: isSet(object.id) ? Long.fromString(object.id) : Long.UZERO,
+			id: isSet(object.id) ? Number(object.id) : 0,
 			createDate: isSet(object.createDate) ? String(object.createDate) : '',
 		}
 	},
 
 	toJSON(message: MsgCreateAnnexResponse): unknown {
 		const obj: any = {}
-		message.id !== undefined && (obj.id = (message.id || Long.UZERO).toString())
+		message.id !== undefined && (obj.id = Math.round(message.id))
 		message.createDate !== undefined && (obj.createDate = message.createDate)
 		return obj
 	},
 
 	fromPartial<I extends Exact<DeepPartial<MsgCreateAnnexResponse>, I>>(object: I): MsgCreateAnnexResponse {
 		const message = createBaseMsgCreateAnnexResponse()
-		message.id = object.id !== undefined && object.id !== null ? Long.fromValue(object.id) : Long.UZERO
+		message.id = object.id ?? 0
 		message.createDate = object.createDate ?? ''
 		return message
 	},
 }
 
 function createBaseMsgSignAnnex(): MsgSignAnnex {
-	return { creator: '', annexId: Long.UZERO }
+	return { creator: '', annexId: 0 }
 }
 
 export const MsgSignAnnex = {
@@ -316,7 +316,7 @@ export const MsgSignAnnex = {
 		if (message.creator !== '') {
 			writer.uint32(10).string(message.creator)
 		}
-		if (!message.annexId.isZero()) {
+		if (message.annexId !== 0) {
 			writer.uint32(16).uint64(message.annexId)
 		}
 		return writer
@@ -333,7 +333,7 @@ export const MsgSignAnnex = {
 					message.creator = reader.string()
 					break
 				case 2:
-					message.annexId = reader.uint64() as Long
+					message.annexId = longToNumber(reader.uint64() as Long)
 					break
 				default:
 					reader.skipType(tag & 7)
@@ -346,21 +346,21 @@ export const MsgSignAnnex = {
 	fromJSON(object: any): MsgSignAnnex {
 		return {
 			creator: isSet(object.creator) ? String(object.creator) : '',
-			annexId: isSet(object.annexId) ? Long.fromString(object.annexId) : Long.UZERO,
+			annexId: isSet(object.annexId) ? Number(object.annexId) : 0,
 		}
 	},
 
 	toJSON(message: MsgSignAnnex): unknown {
 		const obj: any = {}
 		message.creator !== undefined && (obj.creator = message.creator)
-		message.annexId !== undefined && (obj.annexId = (message.annexId || Long.UZERO).toString())
+		message.annexId !== undefined && (obj.annexId = Math.round(message.annexId))
 		return obj
 	},
 
 	fromPartial<I extends Exact<DeepPartial<MsgSignAnnex>, I>>(object: I): MsgSignAnnex {
 		const message = createBaseMsgSignAnnex()
 		message.creator = object.creator ?? ''
-		message.annexId = object.annexId !== undefined && object.annexId !== null ? Long.fromValue(object.annexId) : Long.UZERO
+		message.annexId = object.annexId ?? 0
 		return message
 	},
 }
@@ -405,7 +405,7 @@ export const MsgSignAnnexResponse = {
 }
 
 function createBaseMsgSignContract(): MsgSignContract {
-	return { creator: '', contractId: Long.UZERO }
+	return { creator: '', contractId: 0 }
 }
 
 export const MsgSignContract = {
@@ -413,7 +413,7 @@ export const MsgSignContract = {
 		if (message.creator !== '') {
 			writer.uint32(10).string(message.creator)
 		}
-		if (!message.contractId.isZero()) {
+		if (message.contractId !== 0) {
 			writer.uint32(16).uint64(message.contractId)
 		}
 		return writer
@@ -430,7 +430,7 @@ export const MsgSignContract = {
 					message.creator = reader.string()
 					break
 				case 2:
-					message.contractId = reader.uint64() as Long
+					message.contractId = longToNumber(reader.uint64() as Long)
 					break
 				default:
 					reader.skipType(tag & 7)
@@ -443,21 +443,21 @@ export const MsgSignContract = {
 	fromJSON(object: any): MsgSignContract {
 		return {
 			creator: isSet(object.creator) ? String(object.creator) : '',
-			contractId: isSet(object.contractId) ? Long.fromString(object.contractId) : Long.UZERO,
+			contractId: isSet(object.contractId) ? Number(object.contractId) : 0,
 		}
 	},
 
 	toJSON(message: MsgSignContract): unknown {
 		const obj: any = {}
 		message.creator !== undefined && (obj.creator = message.creator)
-		message.contractId !== undefined && (obj.contractId = (message.contractId || Long.UZERO).toString())
+		message.contractId !== undefined && (obj.contractId = Math.round(message.contractId))
 		return obj
 	},
 
 	fromPartial<I extends Exact<DeepPartial<MsgSignContract>, I>>(object: I): MsgSignContract {
 		const message = createBaseMsgSignContract()
 		message.creator = object.creator ?? ''
-		message.contractId = object.contractId !== undefined && object.contractId !== null ? Long.fromValue(object.contractId) : Long.UZERO
+		message.contractId = object.contractId ?? 0
 		return message
 	},
 }
@@ -502,7 +502,7 @@ export const MsgSignContractResponse = {
 }
 
 function createBaseMsgCompleteContract(): MsgCompleteContract {
-	return { creator: '', contractId: Long.UZERO }
+	return { creator: '', contractId: 0 }
 }
 
 export const MsgCompleteContract = {
@@ -510,7 +510,7 @@ export const MsgCompleteContract = {
 		if (message.creator !== '') {
 			writer.uint32(10).string(message.creator)
 		}
-		if (!message.contractId.isZero()) {
+		if (message.contractId !== 0) {
 			writer.uint32(16).uint64(message.contractId)
 		}
 		return writer
@@ -527,7 +527,7 @@ export const MsgCompleteContract = {
 					message.creator = reader.string()
 					break
 				case 2:
-					message.contractId = reader.uint64() as Long
+					message.contractId = longToNumber(reader.uint64() as Long)
 					break
 				default:
 					reader.skipType(tag & 7)
@@ -540,21 +540,21 @@ export const MsgCompleteContract = {
 	fromJSON(object: any): MsgCompleteContract {
 		return {
 			creator: isSet(object.creator) ? String(object.creator) : '',
-			contractId: isSet(object.contractId) ? Long.fromString(object.contractId) : Long.UZERO,
+			contractId: isSet(object.contractId) ? Number(object.contractId) : 0,
 		}
 	},
 
 	toJSON(message: MsgCompleteContract): unknown {
 		const obj: any = {}
 		message.creator !== undefined && (obj.creator = message.creator)
-		message.contractId !== undefined && (obj.contractId = (message.contractId || Long.UZERO).toString())
+		message.contractId !== undefined && (obj.contractId = Math.round(message.contractId))
 		return obj
 	},
 
 	fromPartial<I extends Exact<DeepPartial<MsgCompleteContract>, I>>(object: I): MsgCompleteContract {
 		const message = createBaseMsgCompleteContract()
 		message.creator = object.creator ?? ''
-		message.contractId = object.contractId !== undefined && object.contractId !== null ? Long.fromValue(object.contractId) : Long.UZERO
+		message.contractId = object.contractId ?? 0
 		return message
 	},
 }
@@ -653,12 +653,21 @@ interface Rpc {
 	request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>
 }
 
+declare var self: any | undefined
+declare var window: any | undefined
+declare var global: any | undefined
+var globalThis: any = (() => {
+	if (typeof globalThis !== 'undefined') return globalThis
+	if (typeof self !== 'undefined') return self
+	if (typeof window !== 'undefined') return window
+	if (typeof global !== 'undefined') return global
+	throw 'Unable to locate global object'
+})()
+
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined
 
 export type DeepPartial<T> = T extends Builtin
 	? T
-	: T extends Long
-	? string | number | Long
 	: T extends Array<infer U>
 	? Array<DeepPartial<U>>
 	: T extends ReadonlyArray<infer U>
@@ -672,6 +681,15 @@ export type Exact<P, I extends P> = P extends Builtin
 	? P
 	: P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<Exclude<keyof I, KeysOfUnion<P>>, never>
 
+function longToNumber(long: Long): number {
+	if (long.gt(Number.MAX_SAFE_INTEGER)) {
+		throw new globalThis.Error('Value is larger than Number.MAX_SAFE_INTEGER')
+	}
+	return long.toNumber()
+}
+
+// If you get a compile-error about 'Constructor<Long> and ... have no overlap',
+// add '--ts_proto_opt=esModuleInterop=true' as a flag when calling 'protoc'.
 if (_m0.util.Long !== Long) {
 	_m0.util.Long = Long as any
 	_m0.configure()

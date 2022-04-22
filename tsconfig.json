@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "outDir": "./built",
+        "sourceMap": true,
+        "noImplicitAny": true,
+        "module": "es6",
+        "target": "es5",
+        "allowJs": true,
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "strict": true
+    },
+    "type": "module",
+    "include": [
+        "./**/*"
+    ],
+    "exclude": [
+        "./built/**/*" // This is what fixed it!
+    ]
+}

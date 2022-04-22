@@ -6,7 +6,7 @@ const { allowedFields, signUser } = require('../helpers/passport');
 const { connection } = require('../db');
 const passport = require('passport');
 const Wallet = require('./../blockchain/wallet');
-
+const {txClient} = require('./../blockchain/blmodule');
 
 const login = {
     route: '/login',
@@ -50,10 +50,18 @@ const test = {
     route: '/test/:id',
     method: METHOD_TYPES.GET,
     fn: async ({ params: { id } }) => {
-        let wallet = new Wallet();
+        let wallet = new Wallet("piece elbow winner sail replace embark rib collect priority coin type mansion roast ship census movie crucial hockey useless seminar visit expect mimic derive");
         await wallet.init()
-        console.log(wallet.getAddress());
-        console.log(wallet.mnemonic);
+        console.log(wallet.getAddress())
+        let client = await txClient(wallet.wallet);
+        const message = client.msgCreateContract({
+            creator: wallet.getAddress(),
+            contractHash: 'sdfdff', 
+            buyer:'test1'
+        });
+
+        const response = await client.signAndBroadcast([message]);
+        console.log(response);
     }
 }
 

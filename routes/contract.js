@@ -79,7 +79,7 @@ const addContract = {
             ;[contract] = await trx('contract')
 			.insert({
 				type: DOC_TYPES.RAW_MATERIALS,
-				blcontract_id: ,
+				//blcontract_id: ,
 				json: fileName,
                 src: fullLink
 			})
@@ -165,7 +165,7 @@ const addAnnex = {
 			.insert({
 				src: fullLink,
 				json: fileName,
-				blannex_id: ,
+				//blannex_id: ,
 			})
 			.returning(['id', 'create_date', 'blannex_id', 'src','json'])
 

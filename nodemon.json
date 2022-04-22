@@ -1,0 +1,8 @@
+{
+    "restartable": "rs",
+    "ignore": [".git", "node_modules/"],
+    "execMap": {
+        "ts": "node -r esm -r ts-node/register"
+    },
+    "ext": "js,json,ts"
+}

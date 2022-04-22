@@ -1,10 +1,12 @@
 const { SigningStargateClient } = require('@cosmjs/stargate');
-const { createError } = require("./error");
+const { createError } = require("../helpers/error");
 const { Registry } = require('@cosmjs/proto-signing');
-const Api = require('./api');
+const {MsgCreateAnnex, MsgCreateContract, MsgCompleteContract, MsgSignAnnex, MsgSignContract} = require('../blockchain_types/tx')
+
+
+// const Api = require('./api');
 
 const MissingWalletError = () => createError('Wallet is required!');
-
 
 const types = [
     ["/cosmonaut.documentservice.documentservice.MsgCreateAnnex", MsgCreateAnnex],
@@ -15,7 +17,7 @@ const types = [
     
 ];
 
-export const registry = new Registry(types);
+const registry = new Registry(types);
 
 const defaultFee = {
     amount: [],
@@ -42,12 +44,12 @@ const txClient = async (wallet, { addr: addr } = { addr: "http://localhost:26657
   };
 };
 
-const queryClient = async ({ addr: addr } = { addr: "http://localhost:1317" }) => {
-    return new Api({ baseUrl: addr });
-};
+// const queryClient = async ({ addr: addr } = { addr: "http://localhost:1317" }) => {
+//     return new Api({ baseUrl: addr });
+// };
 
 module.exports = {
   txClient,
-  queryClient,
+  // queryClient,
   MissingWalletError
 };

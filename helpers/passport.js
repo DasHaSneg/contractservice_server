@@ -36,7 +36,7 @@ passport.use(
     )
 );
 
-extractToken = ExtractJwt.fromAuthHeaderAsBearerToken();
+const extractToken = ExtractJwt.fromAuthHeaderAsBearerToken();
 
 passport.use(
     new JwtStrategy(

@@ -1,0 +1,3 @@
+[submodule "proto/documentservice"]
+	path = proto/documentservice
+	url = https://github.com/DasHaSneg/documentservice_proto

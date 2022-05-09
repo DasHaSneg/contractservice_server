@@ -68,7 +68,7 @@ const test = {
 const register = {
     route: '/register',
     method: METHOD_TYPES.POST,
-    fn: async ({body: {email, password, profile: profileInfo}}) => {
+    fn: async ({body: {email, password, profile}}) => {
         if (!email) {
             return createError({
                 status: BAD_REQUEST,
@@ -84,7 +84,7 @@ const register = {
 			})
         }
 
-        if (!profile || profileRequiredFields.some(field => !profileInfo[field])) {
+        if (!profile || profileRequiredFields.some(field => !profile[field])) {
             return createError({
                 status: BAD_REQUEST,
                 message: 'You did not enter all the fields to create a profile!',
@@ -93,7 +93,7 @@ const register = {
 
         let wallet = new Wallet();
         await wallet.init()
-        publicAddress = wallet.getAddress();
+        let publicAddress = wallet.getAddress();
 
         let profile_id = null;
         let user = null;
@@ -102,7 +102,7 @@ const register = {
             
             ;[profile_id] = await trx('profile')
                 .insert({
-                    ...profileInfo
+                    ...profile
                 })
                 .returning('id');
 
@@ -110,8 +110,8 @@ const register = {
                 .insert({
                     email,
                     password: await Password.hash(password),
-                    profile_id,
-                    public_address: wallet.getAddress(),
+                    profile_id: profile_id.id,
+                    public_address: publicAddress,
                     mnemonic: wallet.mnemonic
                 })
                 .returning(allowedFields)

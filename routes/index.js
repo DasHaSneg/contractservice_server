@@ -1,5 +1,6 @@
 const {isError, SERVER_ERROR} = require('../helpers/error')
 const router = require('express').Router()
+const passport = require('passport')
 
 const handleError = (res, error) => {
     res.status(error.status || SERVER_ERROR).json({
@@ -23,8 +24,6 @@ function addRouter({routes, route}) {
             middlewares.unshift(passport.authenticate('jwt', { session: false }));
         }
         
-        console.log(middlewares);
-
         router[method](subRoute, ...middlewares, async (req, res, next) => {
             try {
                 const result = await fn({ body: req.body, user: req.user, params: req.params, query: req.query, token: req.token, files: req.files });
@@ -58,7 +57,8 @@ router.get('/', (req, res) => {
 })
 
 const routes = [
-    require('./auth')
+    require('./auth'),
+    require('./profile')
 ];
 
 routes.map(addRouter).forEach(({ router: subRouter, route }) => router.use(route, subRouter));

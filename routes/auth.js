@@ -5,8 +5,10 @@ const Password = require('../helpers/password')
 const { allowedFields, signUser } = require('../helpers/passport');
 const { connection } = require('../db');
 const passport = require('passport');
-const Wallet = require('./../blockchain/wallet');
-const {txClient} = require('./../blockchain/blmodule');
+const {mesApi} = require('../blockchain/txclient');
+const Signer = require('../blockchain/signer');
+const {ACCOUNT_MNEMONIC} = require('../config');
+
 
 const login = {
     route: '/login',
@@ -50,18 +52,29 @@ const test = {
     route: '/test/:id',
     method: METHOD_TYPES.GET,
     fn: async ({ params: { id } }) => {
-        let wallet = new Wallet("piece elbow winner sail replace embark rib collect priority coin type mansion roast ship census movie crucial hockey useless seminar visit expect mimic derive");
-        await wallet.init()
-        console.log(wallet.getAddress())
-        let client = await txClient(wallet.wallet);
-        const message = client.msgCreateContract({
-            creator: wallet.getAddress(),
+        let mainSigner = new Signer(mesApi, ACCOUNT_MNEMONIC);
+        await mainSigner.init();
+        let signer = new Signer(mesApi);
+        await signer.init();
+
+        let result = await mainSigner.messageApi.send({
+                    fromAddress: mainSigner.publicAddress, 
+                    toAddress: signer.publicAddress, 
+                    amount: [{
+                        denom: "stake",
+                        amount: "10",
+                    }]
+        });
+
+        console.log(result);
+
+        result = await signer.messageApi.createContract({
+            creator: signer.publicAddress,
             contractHash: 'sdfdff', 
             buyer:'test1'
         });
 
-        const response = await client.signAndBroadcast([message]);
-        console.log(response);
+        console.log(result);
     }
 }
 
@@ -91,9 +104,9 @@ const register = {
             })
         }
 
-        let wallet = new Wallet();
-        await wallet.init()
-        let publicAddress = wallet.getAddress();
+        let signer = new Signer(mesApi);
+        await signer.init();
+        let publicAddress = signer.publicAddress;
 
         let profile_id = null;
         let user = null;
@@ -112,7 +125,7 @@ const register = {
                     password: await Password.hash(password),
                     profile_id: profile_id.id,
                     public_address: publicAddress,
-                    mnemonic: wallet.mnemonic
+                    mnemonic: signer.mnemonic
                 })
                 .returning(allowedFields)
         });

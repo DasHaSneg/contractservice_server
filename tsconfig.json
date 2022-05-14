@@ -13,8 +13,5 @@
     "type": "module",
     "include": [
         "./**/*"
-    ],
-    "exclude": [
-        "./built/**/*" // This is what fixed it!
     ]
 }

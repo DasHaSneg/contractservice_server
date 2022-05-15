@@ -10,14 +10,14 @@ const { BLOCKCHAIN_GRPC } = require('../config');
 const mesApi = {
   createContract: {
     message: 'msgCreateContract',
-    req: ['creator', 'contractHash', 'buyer'],
+    req: ['creator', 'contractHash', 'buyer', 'sellerInn', 'buyerInn'],
     // res: ['id', 'createDate']
-    res: ['Id']
+    res: ['Id', 'State']
   },
   createAnnex: {
     message: 'msgCreateAnnex',
     req: ['creator', 'annexHash', 'contractId', 'buyer'],
-    res: ['id', 'createDate']
+    res: ['Id', 'ContractState', 'AnnexState']
   },
   completeContract: {
     message: 'msgCompleteContract',

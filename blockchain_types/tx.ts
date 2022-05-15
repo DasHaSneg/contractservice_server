@@ -8,6 +8,8 @@ export interface MsgCreateContract {
 	creator: string
 	contractHash: string
 	buyer: string
+	sellerInn: string
+	buyerInn: string
 }
 
 export interface MsgCreateContractResponse {
@@ -49,7 +51,7 @@ export interface MsgCompleteContract {
 export interface MsgCompleteContractResponse {}
 
 function createBaseMsgCreateContract(): MsgCreateContract {
-	return { creator: '', contractHash: '', buyer: '' }
+	return { creator: '', contractHash: '', buyer: '', sellerInn: '', buyerInn: '' }
 }
 
 export const MsgCreateContract = {
@@ -62,6 +64,12 @@ export const MsgCreateContract = {
 		}
 		if (message.buyer !== '') {
 			writer.uint32(26).string(message.buyer)
+		}
+		if (message.sellerInn !== '') {
+			writer.uint32(34).string(message.sellerInn)
+		}
+		if (message.buyerInn !== '') {
+			writer.uint32(42).string(message.buyerInn)
 		}
 		return writer
 	},
@@ -82,6 +90,12 @@ export const MsgCreateContract = {
 				case 3:
 					message.buyer = reader.string()
 					break
+				case 4:
+					message.sellerInn = reader.string()
+					break
+				case 5:
+					message.buyerInn = reader.string()
+					break
 				default:
 					reader.skipType(tag & 7)
 					break
@@ -95,6 +109,8 @@ export const MsgCreateContract = {
 			creator: isSet(object.creator) ? String(object.creator) : '',
 			contractHash: isSet(object.contractHash) ? String(object.contractHash) : '',
 			buyer: isSet(object.buyer) ? String(object.buyer) : '',
+			sellerInn: isSet(object.sellerInn) ? String(object.sellerInn) : '',
+			buyerInn: isSet(object.buyerInn) ? String(object.buyerInn) : '',
 		}
 	},
 
@@ -103,6 +119,8 @@ export const MsgCreateContract = {
 		message.creator !== undefined && (obj.creator = message.creator)
 		message.contractHash !== undefined && (obj.contractHash = message.contractHash)
 		message.buyer !== undefined && (obj.buyer = message.buyer)
+		message.sellerInn !== undefined && (obj.sellerInn = message.sellerInn)
+		message.buyerInn !== undefined && (obj.buyerInn = message.buyerInn)
 		return obj
 	},
 
@@ -111,6 +129,8 @@ export const MsgCreateContract = {
 		message.creator = object.creator ?? ''
 		message.contractHash = object.contractHash ?? ''
 		message.buyer = object.buyer ?? ''
+		message.sellerInn = object.sellerInn ?? ''
+		message.buyerInn = object.buyerInn ?? ''
 		return message
 	},
 }
@@ -153,7 +173,7 @@ export const MsgCreateContractResponse = {
 
 	fromJSON(object: any): MsgCreateContractResponse {
 		return {
-			id: isSet(object.id) ? Long.fromString(object.id) : Long.UZERO,
+			id: isSet(object.id) ? Long.fromValue(object.id) : Long.UZERO,
 			createDate: isSet(object.createDate) ? String(object.createDate) : '',
 		}
 	},
@@ -225,7 +245,7 @@ export const MsgCreateAnnex = {
 		return {
 			creator: isSet(object.creator) ? String(object.creator) : '',
 			annexHash: isSet(object.annexHash) ? String(object.annexHash) : '',
-			contractId: isSet(object.contractId) ? Long.fromString(object.contractId) : Long.UZERO,
+			contractId: isSet(object.contractId) ? Long.fromValue(object.contractId) : Long.UZERO,
 			buyer: isSet(object.buyer) ? String(object.buyer) : '',
 		}
 	},
@@ -287,7 +307,7 @@ export const MsgCreateAnnexResponse = {
 
 	fromJSON(object: any): MsgCreateAnnexResponse {
 		return {
-			id: isSet(object.id) ? Long.fromString(object.id) : Long.UZERO,
+			id: isSet(object.id) ? Long.fromValue(object.id) : Long.UZERO,
 			createDate: isSet(object.createDate) ? String(object.createDate) : '',
 		}
 	},
@@ -346,7 +366,7 @@ export const MsgSignAnnex = {
 	fromJSON(object: any): MsgSignAnnex {
 		return {
 			creator: isSet(object.creator) ? String(object.creator) : '',
-			annexId: isSet(object.annexId) ? Long.fromString(object.annexId) : Long.UZERO,
+			annexId: isSet(object.annexId) ? Long.fromValue(object.annexId) : Long.UZERO,
 		}
 	},
 
@@ -443,7 +463,7 @@ export const MsgSignContract = {
 	fromJSON(object: any): MsgSignContract {
 		return {
 			creator: isSet(object.creator) ? String(object.creator) : '',
-			contractId: isSet(object.contractId) ? Long.fromString(object.contractId) : Long.UZERO,
+			contractId: isSet(object.contractId) ? Long.fromValue(object.contractId) : Long.UZERO,
 		}
 	},
 
@@ -540,7 +560,7 @@ export const MsgCompleteContract = {
 	fromJSON(object: any): MsgCompleteContract {
 		return {
 			creator: isSet(object.creator) ? String(object.creator) : '',
-			contractId: isSet(object.contractId) ? Long.fromString(object.contractId) : Long.UZERO,
+			contractId: isSet(object.contractId) ? Long.fromValue(object.contractId) : Long.UZERO,
 		}
 	},
 

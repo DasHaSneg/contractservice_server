@@ -58,7 +58,8 @@ router.get('/', (req, res) => {
 
 const routes = [
     require('./auth'),
-    require('./profile')
+    require('./profile'),
+    require('./contract')
 ];
 
 routes.map(addRouter).forEach(({ router: subRouter, route }) => router.use(route, subRouter));

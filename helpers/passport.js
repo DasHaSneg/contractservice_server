@@ -8,7 +8,7 @@ const {connection} = require('../db');
 
 const signUser = user => ({user, token: jwt.sign(user, TOKEN_SECRET)});
 
-const allowedFields = ['id', 'email', 'profile_id', 'public_address', 'date_updated'];
+const allowedFields = ['id', 'email', 'profile_id', 'date_updated'];
 
 passport.use(
     new LocalStrategy(

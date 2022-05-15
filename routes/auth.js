@@ -108,6 +108,21 @@ const register = {
         await signer.init();
         let publicAddress = signer.publicAddress;
 
+        let mainSigner = new Signer(mesApi, ACCOUNT_MNEMONIC);
+        await mainSigner.init();
+
+        let result = await mainSigner.messageApi.send({
+                    fromAddress: mainSigner.publicAddress, 
+                    toAddress: publicAddress, 
+                    amount: [{
+                        denom: "stake",
+                        amount: "10",
+                    }]
+        });
+
+        console.log(result);
+
+
         let profile_id = null;
         let user = null;
 
@@ -115,7 +130,8 @@ const register = {
             
             ;[profile_id] = await trx('profile')
                 .insert({
-                    ...profile
+                    ...profile,
+                    public_address: publicAddress,
                 })
                 .returning('id');
 
@@ -124,7 +140,6 @@ const register = {
                     email,
                     password: await Password.hash(password),
                     profile_id: profile_id.id,
-                    public_address: publicAddress,
                     mnemonic: signer.mnemonic
                 })
                 .returning(allowedFields)

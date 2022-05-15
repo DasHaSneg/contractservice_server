@@ -11,11 +11,13 @@ export interface Contract {
 	state: string
 	seller: string
 	buyer: string
+	sellerInn: string
+	buyerInn: string
 	createDate: string
 }
 
 function createBaseContract(): Contract {
-	return { creator: '', id: Long.UZERO, contractHash: '', state: '', seller: '', buyer: '', createDate: '' }
+	return { creator: '', id: Long.UZERO, contractHash: '', state: '', seller: '', buyer: '', sellerInn: '', buyerInn: '', createDate: '' }
 }
 
 export const Contract = {
@@ -38,8 +40,14 @@ export const Contract = {
 		if (message.buyer !== '') {
 			writer.uint32(50).string(message.buyer)
 		}
+		if (message.sellerInn !== '') {
+			writer.uint32(58).string(message.sellerInn)
+		}
+		if (message.buyerInn !== '') {
+			writer.uint32(66).string(message.buyerInn)
+		}
 		if (message.createDate !== '') {
-			writer.uint32(58).string(message.createDate)
+			writer.uint32(74).string(message.createDate)
 		}
 		return writer
 	},
@@ -70,6 +78,12 @@ export const Contract = {
 					message.buyer = reader.string()
 					break
 				case 7:
+					message.sellerInn = reader.string()
+					break
+				case 8:
+					message.buyerInn = reader.string()
+					break
+				case 9:
 					message.createDate = reader.string()
 					break
 				default:
@@ -83,11 +97,13 @@ export const Contract = {
 	fromJSON(object: any): Contract {
 		return {
 			creator: isSet(object.creator) ? String(object.creator) : '',
-			id: isSet(object.id) ? Long.fromString(object.id) : Long.UZERO,
+			id: isSet(object.id) ? Long.fromValue(object.id) : Long.UZERO,
 			contractHash: isSet(object.contractHash) ? String(object.contractHash) : '',
 			state: isSet(object.state) ? String(object.state) : '',
 			seller: isSet(object.seller) ? String(object.seller) : '',
 			buyer: isSet(object.buyer) ? String(object.buyer) : '',
+			sellerInn: isSet(object.sellerInn) ? String(object.sellerInn) : '',
+			buyerInn: isSet(object.buyerInn) ? String(object.buyerInn) : '',
 			createDate: isSet(object.createDate) ? String(object.createDate) : '',
 		}
 	},
@@ -100,6 +116,8 @@ export const Contract = {
 		message.state !== undefined && (obj.state = message.state)
 		message.seller !== undefined && (obj.seller = message.seller)
 		message.buyer !== undefined && (obj.buyer = message.buyer)
+		message.sellerInn !== undefined && (obj.sellerInn = message.sellerInn)
+		message.buyerInn !== undefined && (obj.buyerInn = message.buyerInn)
 		message.createDate !== undefined && (obj.createDate = message.createDate)
 		return obj
 	},
@@ -112,6 +130,8 @@ export const Contract = {
 		message.state = object.state ?? ''
 		message.seller = object.seller ?? ''
 		message.buyer = object.buyer ?? ''
+		message.sellerInn = object.sellerInn ?? ''
+		message.buyerInn = object.buyerInn ?? ''
 		message.createDate = object.createDate ?? ''
 		return message
 	},

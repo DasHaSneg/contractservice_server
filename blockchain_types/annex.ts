@@ -90,9 +90,9 @@ export const Annex = {
 	fromJSON(object: any): Annex {
 		return {
 			creator: isSet(object.creator) ? String(object.creator) : '',
-			id: isSet(object.id) ? Long.fromString(object.id) : Long.UZERO,
+			id: isSet(object.id) ? Long.fromValue(object.id) : Long.UZERO,
 			annexHash: isSet(object.annexHash) ? String(object.annexHash) : '',
-			contractId: isSet(object.contractId) ? Long.fromString(object.contractId) : Long.UZERO,
+			contractId: isSet(object.contractId) ? Long.fromValue(object.contractId) : Long.UZERO,
 			state: isSet(object.state) ? String(object.state) : '',
 			seller: isSet(object.seller) ? String(object.seller) : '',
 			buyer: isSet(object.buyer) ? String(object.buyer) : '',

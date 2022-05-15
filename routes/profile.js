@@ -42,7 +42,8 @@ const getProfileByINN= {
             'bank',
             'settlement_account',
             'correspondent_account', 
-            'bic'
+            'bic',
+            'public_address'
         ])
         .where({
             inn: inn

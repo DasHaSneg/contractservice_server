@@ -84,13 +84,7 @@ const addContract = {
 			})
         }
         
-        let info = {
-            seller: sellerProfile,
-            buyer: buyerProfile
-        };
-        
-        let jsonObj = JSON.stringify(info);
-
+        //get user mnemonic
         const [{mnemonic}] = await connection('user')
             .select([
                 'mnemonic'
@@ -98,8 +92,6 @@ const addContract = {
             .where({
                 id: id
             });
-
-        console.log(mnemonic)
 
         if (!mnemonic) {
             return createError({
@@ -111,14 +103,15 @@ const addContract = {
         let signer = new Signer(mesApi, mnemonic);
         await signer.init();
 
-        console.log({
-            creator: signer.publicAddress,
-            contractHash: await Password.hash(jsonObj), 
-            buyer: buyerProfile.public_address,
-            sellerInn: sellerProfile.inn,
-            buyerInn: buyerProfile.inn
-        })
+        let info = {
+            seller: sellerProfile,
+            buyer: buyerProfile
+        };
+        
+        //make contract file
+        let jsonObj = JSON.stringify(info);
 
+        //send message createContract to blockchain
         let result = await signer.messageApi.createContract({
             creator: signer.publicAddress,
             contractHash: await Password.hash(jsonObj), 
@@ -127,7 +120,6 @@ const addContract = {
             buyerInn: buyerProfile.inn
         });
 
-        console.log(result);
 
         if (!(result || result.Id)) {
             return createError({
@@ -140,6 +132,7 @@ const addContract = {
         let contract_party1 = null;
         let contract_party2 = null;
 
+        //add contract to bd
         await connection.transaction(async trx => {
             ;[contract] = await trx('contract')
 			.insert({
@@ -198,6 +191,7 @@ const getAnnex = {
 	method: METHOD_TYPES.GET,
 	auth: true,
 	fn: async ({ params: { contract_id, id } }) => {
+
 		const annexes = await connection('annex')
         .select([
             'create_date', 
@@ -216,27 +210,66 @@ const addAnnex = {
     route: '/:id/annex',
 	method: METHOD_TYPES.POST,
 	auth: true,
-    fn: async ({ user: { id: user_id }, params: { contract_id }, body: { products } }) => {
+    fn: async ({ user: { id }, params: { contract_id }, body: { products, buyerProfile } }) => {
 
-        const randomStr = crypto.randomBytes(4).toString('hex');
-        const fullLink = `public/annexes/${Date.now()}/${user_id}/${randomStr}`;
+        const [{blcontract_id}] = await connection('contract')
+        .select([
+            'blcontract_id'
+        ])
+        .where({
+            id: contract_id
+        });
 
-        await fs.promises.mkdir(fullLink, { recursive: true });
+        console.log(blcontract_id)
+        
+        const [{mnemonic}] = await connection('user')
+        .select([
+            'mnemonic'
+        ])
+        .where({
+            id: id
+        });
 
-        const fileName = `${crypto.randomBytes(12).toString('hex')}.${annex.name.split('.').pop()}`
+        console.log(mnemonic)
 
-        await contract.mv(path.join(fullLink, fileName))
+        if (!mnemonic) {
+            return createError({
+                status: SERVER_ERROR,
+                message: `User not found`,
+            });
+        }
 
-         //TO_DO: add blannex_id
+        let signer = new Signer(mesApi, mnemonic);
+        await signer.init();
+
+        //make annex file
+        let jsonObj = JSON.stringify(products);
+
+        //send message createContract to blockchain
+        let result = await signer.messageApi.createAnnex({
+            creator: signer.publicAddress,
+            annexHash: await Password.hash(jsonObj), 
+            contract_id: blcontract_id,
+            buyer: buyerProfile.public_address,
+        });
+
+
+        if (!(result || result.Id || result.ContractState || result.AnnexState)) {
+            return createError({
+				status: SERVER_ERROR,
+				message: `Blockchain annex id error`,
+			});
+        } 
 
 		const [annex] = await connection('annex')
 			.insert({
-				src: fullLink,
-				json: fileName,
-				//blannex_id: ,
+				file: jsonObj,
+				blannex_id: result.Id
 			})
-			.returning(['id', 'create_date', 'blannex_id', 'src','json'])
+			.returning(['id', 'create_date', 'blannex_id', 'file'])
 
+        annex.status = result.AnnexState;
+        annex.contractState = result.ContractState;
 		return annex
 	},
 }
@@ -247,7 +280,7 @@ const signContract = {
 	auth: true,
     fn: async ({ user: { id: user_id }, params: { id } }) => {
 
-        const mnemonic = await connection('user')
+        const [{mnemonic}] = await connection('user')
         .select([
             'mnemonic'
         ])
@@ -255,24 +288,20 @@ const signContract = {
             id: user_id
         });
 
-        console.log(mnemonic)
-
-        const blcontract_id = await connection('contract')
-        .select([
-            'blcontract_id'
-        ])
-        .where({
-            id: id
-        });
-
-        console.log(blcontract_id)
-
         if (!mnemonic) {
             return createError({
                 status: SERVER_ERROR,
                 message: `User not found`,
             });
         }
+
+        const [{blcontract_id}] = await connection('contract')
+        .select([
+            'blcontract_id'
+        ])
+        .where({
+            id: id
+        });
 
         let signer = new Signer(mesApi, mnemonic);
         await signer.init();
@@ -292,7 +321,7 @@ const signAnnex = {
 	auth: true,
     fn: async ({ user: { id: user_id }, params: { id } }) => {
 
-        const mnemonic = await connection('user')
+        const [{mnemonic}] = await connection('user')
         .select([
             'mnemonic'
         ])
@@ -302,7 +331,14 @@ const signAnnex = {
 
         console.log(mnemonic)
 
-        const blannex_id = await connection('annex')
+        if (!mnemonic) {
+            return createError({
+                status: SERVER_ERROR,
+                message: `User not found`,
+            });
+        }
+
+        const [{blannex_id}] = await connection('annex')
         .select([
             'blannex_id'
         ])
@@ -311,13 +347,6 @@ const signAnnex = {
         });
 
         console.log(blannex_id)
-
-        if (!mnemonic) {
-            return createError({
-                status: SERVER_ERROR,
-                message: `User not found`,
-            });
-        }
 
         let signer = new Signer(mesApi, mnemonic);
         await signer.init();
@@ -337,7 +366,7 @@ const completeContract = {
 	auth: true,
     fn: async ({ user: { id: user_id }, params: { id } }) => {
 
-        const mnemonic = await connection('user')
+        const [{mnemonic}] = await connection('user')
         .select([
             'mnemonic'
         ])
@@ -345,9 +374,14 @@ const completeContract = {
             id: user_id
         });
 
-        console.log(mnemonic)
+        if (!mnemonic) {
+            return createError({
+                status: SERVER_ERROR,
+                message: `User not found`,
+            });
+        }
 
-        const blcontract_id = await connection('contract')
+        const [{blcontract_id}] = await connection('contract')
         .select([
             'blcontract_id'
         ])
@@ -356,13 +390,6 @@ const completeContract = {
         });
 
         console.log(blcontract_id)
-
-        if (!mnemonic) {
-            return createError({
-                status: SERVER_ERROR,
-                message: `User not found`,
-            });
-        }
 
         let signer = new Signer(mesApi, mnemonic);
         await signer.init();

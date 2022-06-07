@@ -1,0 +1,55 @@
+version: "3"
+services:
+  server:
+    # image: 
+    build: .
+    depends_on:
+      - postgre
+    restart: unless-stopped
+    ports:
+    - '3000:3000'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 100m
+    networks:
+      localnet:
+        ipv4_address: 192.168.11.10
+
+  postgre:
+    image: postgres:14.3
+    environment:
+      POSTGRES_DB: "document_service"
+      POSTGRES_USER: "db_admin"
+      POSTGRES_PASSWORD: "123456"
+      PGDATA: "/var/lib/pgsql/data"
+    volumes:
+      - ../2. Init Database:/docker-entrypoint-initdb.d
+      - .:/var/lib/postgresql/data
+    ports:
+      - "25432:5432"
+    networks:
+      localnet:
+        ipv4_address: 192.168.11.11
+
+        
+  # client:
+  #   image: 
+  #   restart: unless-stopped
+  #   networks:
+  #     - documentservice
+  #   ports:
+  #     - '80:80'
+  #     - '8080:8080'
+  #   logging:
+  #     driver: "json-file"
+  #     options:
+  #       max-size: 100m
+
+networks:
+  localnet:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.11.0/25

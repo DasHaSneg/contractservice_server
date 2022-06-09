@@ -9,24 +9,35 @@ const {mesApi} = require('../blockchain/txclient');
 const Signer = require('../blockchain/signer');
 const Password = require('../helpers/password')
 const { connection } = require('../db');
+const { isConstructorDeclaration } = require('typescript');
 
 
 const getContracts = {
     route: '/',
     method: METHOD_TYPES.GET,
-    //auth: true,
-    fn: async ({ user: { id, profile_id } }) => {
+    auth: true,
+    fn: async ({ user: {profile_id} }) => {
         const query = connection('contract_party')
 			.select(['contract.id', 'type', 'date_started', 'date_created', 'blcontract_id', 'file', 'contract_party.role'])
 			.join('contract', { 'contract_party.contract_id': 'contract.id' })
-			.where({profile_id: id})
+			.where({profile_id})
 
         const res = await query;
-        console.log(res)
+        if (res) {
+            let contracts = res.map(contract => {
+                return {
+                    id: contract.id,
+                    seller: contract.file.seller,
+                    buyer: contract.file.buyer,
+                    blcontract_id: contract.blcontract_id,
+                    role: contract.role
+                }
+            })
 
-        //parse file to get profiles
-        //get contracts by inn (client maybe)
-        return res;
+            return contracts;
+        } else {
+            return [];
+        }
     }
 }
 
@@ -160,8 +171,10 @@ const addContract = {
             .returning(['id'])
 
         });
-
-        contract.status = result.State;
+        contract.main_details = {
+            status: result.State,
+            date: result.CreateDate
+        }
 
 		return contract
 	},
@@ -172,17 +185,29 @@ const getAnnexes = {
     method: METHOD_TYPES.GET,
     auth: true,
     fn: async ({ params: { id} }) => {
-        const annexes = await connection('annex')
+        const res = await connection('annex')
         .select([
-            'create_date', 
+            'id',
             'blannex_id', 
-            'src', 
-            'json'
+            'file'
         ])
         .where({
             contract_id: id
         });
-        return annexes;
+      
+        if (res) {
+            let annexes = res.map(annex => {
+                return {
+                    id: annex.id,
+                    blannex_id: annex.blannex_id,
+                    products: annex.file
+                }
+            })
+
+            return annexes;
+        } else {
+            return [];
+        }
     }
 }
 
@@ -210,7 +235,7 @@ const addAnnex = {
     route: '/:id/annex',
 	method: METHOD_TYPES.POST,
 	auth: true,
-    fn: async ({ user: { id }, params: { contract_id }, body: { products, buyerProfile } }) => {
+    fn: async ({ user: { id }, params: { id: contract_id }, body: { products, buyer_public_address } }) => {
 
         const [{blcontract_id}] = await connection('contract')
         .select([
@@ -250,7 +275,7 @@ const addAnnex = {
             creator: signer.publicAddress,
             annexHash: await Password.hash(jsonObj), 
             contract_id: blcontract_id,
-            buyer: buyerProfile.public_address,
+            buyer: buyer_public_address,
         });
 
 
@@ -264,12 +289,17 @@ const addAnnex = {
 		const [annex] = await connection('annex')
 			.insert({
 				file: jsonObj,
-				blannex_id: result.Id
+				blannex_id: result.Id,
+                contract_id
 			})
-			.returning(['id', 'create_date', 'blannex_id', 'file'])
+			.returning(['id', 'blannex_id', 'file'])
 
-        annex.status = result.AnnexState;
+       
         annex.contractState = result.ContractState;
+        annex.main_details = {
+            status: result.AnnexState,
+            date: result.CreateDate
+        }
 		return annex
 	},
 }

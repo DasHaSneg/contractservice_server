@@ -11,12 +11,12 @@ const mesApi = {
   createContract: {
     message: 'msgCreateContract',
     req: ['creator', 'contractHash', 'buyer', 'sellerInn', 'buyerInn'],
-    res: ['Id', 'State']
+    res: ['Id', 'State', 'CreateDate']
   },
   createAnnex: {
     message: 'msgCreateAnnex',
     req: ['creator', 'annexHash', 'contractId', 'buyer'],
-    res: ['Id', 'ContractState', 'AnnexState']
+    res: ['Id', 'ContractState', 'AnnexState', 'CreateDate']
   },
   completeContract: {
     message: 'msgCompleteContract',

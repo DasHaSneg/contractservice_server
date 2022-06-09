@@ -7,7 +7,7 @@ services:
       - postgre
     restart: unless-stopped
     ports:
-    - '3000:3000'
+    - '5000:5000'
     logging:
       driver: "json-file"
       options:
